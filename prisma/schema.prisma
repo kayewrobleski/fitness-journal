@@ -11,7 +11,108 @@ datasource db {
 }
 
 model User {
-  id        Int     @id @default(autoincrement())
-  email     String  @unique
-  password  String
+  id                Int         @id @default(autoincrement())
+  email             String      @unique
+  password          String
+  plans             Plan[]
+  sessions          Session[]
+  userPreferences   UserPreferences?
+}
+
+model UserPreferences {
+  id                    Int           @id @default(autoincrement())
+  user                  User          @relation(fields: [userId], references: [id])
+  userId                Int           @unique
+  defaultUnitSystem     UnitSystem    @relation(fields: [defaultUnitSystemId], references: [id])
+  defaultUnitSystemId   Int          
+}
+
+model MovementPattern {
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  exercises   Exercise[] 
+}
+
+model Exercise {
+  id                Int               @id @default(autoincrement())
+  name              String            @unique
+  movementPattern   MovementPattern   @relation(fields: [movementPatternId], references: [id])
+  movementPatternId Int
+  primaryMuscles    String[]
+  secondaryMuscles  String[]
+  planExercises     PlanExercise[]
+}
+
+model Plan {
+  id                Int                 @id @default(autoincrement())
+  name              String              @unique
+  exercisesOnPlans  ExercisesOnPlans[]       
+  supersets         Json
+  user              User                @relation(fields: [userId], references: [id])
+  userId            Int
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  sessions          Session[]
+}
+
+model PlanExercise {
+  id                Int                 @id @default(autoincrement())
+  name              String              @unique
+  exercise          Exercise            @relation(fields: [exerciseId], references: [id])
+  exerciseId        Int
+  targetSets        Int
+  targetMinReps     Int
+  targetMaxReps     Int
+  targetRest        Int
+  order             Int
+  exercisesOnPlans  ExercisesOnPlans[]
+  sessionExercises  SessionExercise[]        
+}
+
+model ExercisesOnPlans {
+  plan                  Plan                  @relation(fields: [planId], references: [id])
+  planId                Int
+  planExercise          PlanExercise          @relation(fields: [planExerciseId], references: [id])
+  planExerciseId        Int
+  @@id([planId, planExerciseId])
+}
+
+model Session {
+  id                Int                 @id @default(autoincrement())
+  plan              Plan                @relation(fields: [planId], references: [id])
+  planId            Int
+  completedOn       DateTime
+  exercises         SessionExercise[]
+  supersets         Json
+  user              User               @relation(fields: [userId], references: [id])
+  userId            Int              
+}
+
+model SessionExercise {
+  id                Int                 @id @default(autoincrement())
+  session           Session             @relation(fields: [sessionId], references: [id])
+  sessionId         Int
+  planExercise      PlanExercise        @relation(fields: [planExerciseId], references: [id])
+  planExerciseId    Int
+  completedSets     SessionExerciseSet[]
+}
+
+model SessionExerciseSet {
+  id                Int                 @id @default(autoincrement())
+  reps              Int
+  weight            Int
+  unit              UnitSystem          @relation(fields: [unitId], references: [id])
+  unitId            Int
+  rest              Int
+  sessionExercise   SessionExercise     @relation(fields: [sessionExerciseId], references: [id])
+  sessionExerciseId Int
+
+}
+
+model UnitSystem {
+    id                  Int                 @id @default(autoincrement())
+    name                String
+    unit                String
+    sessionExerciseSet  SessionExerciseSet[]
+    userPreferences     UserPreferences[]
 }

@@ -6,6 +6,7 @@ const nextConfig = {
   experimental: {
     appDir: true,
     serverComponentsExternalPackages: ["prisma", "@prisma/client"],
+    transpilePackages: ['react-syntax-highlighter', 'swagger-client', 'swagger-ui-react'],
   },
 };
 

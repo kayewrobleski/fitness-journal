@@ -38,7 +38,7 @@ export interface Plan {
  */
 export interface PlanExercise {
     id: number,
-    exerciseId: number
+    exercise: Exercise,
     targetSets: number,
     targetMinReps: number,
     targetMaxReps: number,
@@ -62,10 +62,8 @@ export interface Session {
  * Relationship between an exercise completed in a Session and the planned
  * exercise in a Plan
  */
-export interface SessionExercise {
-    id: number,
-    planExerciseId: number,
-    sets: SessionExerciseSet[]
+export interface SessionExercise extends PlanExercise {
+    completedSets: SessionExerciseSet[]
 }
 
 /**

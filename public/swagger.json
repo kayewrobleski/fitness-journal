@@ -1,0 +1,22 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Fitness Journal API",
+    "veresion": "1.0"
+  },
+  "paths": {
+    "/api/movement-pattern": {
+      "get": {
+        "summary": "List MovementPatterns",
+        "description": "Returns all movement patterns",
+        "responses": {
+          "200": {
+            "description": "MovementPattern object list"
+          }
+        }
+      }
+    }
+  },
+  "components": {},
+  "tags": []
+}

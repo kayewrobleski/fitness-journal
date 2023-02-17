@@ -1,7 +1,11 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
+import { SessionProvider, useSession, signIn,  signOut } from "next-auth/react";
 
 export default function Home() {
+  const session = useSession();
+  console.log(session);
   return (
     <div className="flex h-screen bg-black">
       <div className="w-screen h-screen flex flex-col justify-center items-center">
@@ -16,6 +20,14 @@ export default function Home() {
           <h1 className="text-stone-200 font-bold text-2xl">
             Next.js Prisma MySQL Auth Starter
           </h1>
+          {session.status === "unauthenticated" && 
+            <button className="text-stone-400" onClick={() => signIn()}>Sign in</button>
+          }
+          {session.status === "authenticated" &&
+            <p className="text-stone-400 mt-5">
+              Signed in as {session?.data?.user?.name}
+            </p>
+          }
           <p className="text-stone-400 mt-5">
             This is a{" "}
             <a
@@ -57,6 +69,9 @@ export default function Home() {
             GitHub
           </a>
         </div>
+        {session.status === "authenticated" &&
+          <button className="text-stone-400" onClick={() => signOut()}>Sign out</button>
+        }
       </div>
     </div>
   );

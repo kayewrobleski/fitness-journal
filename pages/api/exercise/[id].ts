@@ -15,6 +15,30 @@ import { NextApiRequest, NextApiResponse } from "next";
  *       in: path
  *       description: ID of exercise to find
  *       required: true
+ *   put:
+ *     summary: Update Exercise
+ *     description: Updates exercise with the given ID
+ *     responses:
+ *       201:
+ *         description: Exercise updated
+ *       requestBody:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               name: string
+ *               movementPatternId: integer
+ *               primaryMuscles: string[]
+ *               secondaryMuscles: string[]
+ *             example:
+ *               name: "Back Squat"
+ *               movementPatternId: 1
+ *               primaryMuscles: []
+ *               secondaryMuscles: []
+ *     parameters:
+ *     - name: id
+ *       in: path
+ *       description: ID of exercise to update
+ *       required: true
  *   delete:
  *     summary: Delete Exercise
  *     description: Returns exercise object that was deletd
@@ -40,6 +64,19 @@ export default async function handler (
     else if (req.method === 'DELETE') {
         const exercise = await prisma.exercise.delete({
             where: {id: parseInt(id)},
+        })
+        res.status(200).json(exercise);
+    }
+
+    else if (req.method === 'PUT') {
+        const exercise = await prisma.exercise.update({
+            where: {id: parseInt(id)},
+            data: {
+                name: req.body.name,
+                movementPatternId: req.body.movementPatternId,
+                primaryMuscles: req.body.primaryMuscles,
+                secondaryMuscles: req.body.secondaryMuscles
+            }
         })
         res.status(200).json(exercise);
     }

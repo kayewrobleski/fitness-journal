@@ -2,7 +2,28 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-async function main() {
+async function seedUserRoles() {
+    const admin = await prisma.userRole.upsert({
+        where: { role: 'admin' },
+        update: {},
+        create: {
+            role: 'admin'
+        }
+    });
+    const user = await prisma.userRole.upsert({
+        where: { role: 'user' },
+        update: {},
+        create: {
+            role: 'user'
+        }
+    })
+    console.log({
+        admin,
+        user
+    });
+}
+
+async function seedMovementPatterns() {
     const squat = await prisma.movementPattern.upsert({
         where: { name: 'squat' },
         update: {},
@@ -61,6 +82,11 @@ async function main() {
         upperBodyPull,
         singleJoint
     });
+}
+
+async function main() {
+    await seedUserRoles();
+    await seedMovementPatterns();
 }
 
 main()

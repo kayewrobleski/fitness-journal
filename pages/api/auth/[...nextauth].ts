@@ -32,6 +32,7 @@ export function authOptions(
   const adapter = PrismaAdapter(prisma);
 
   const options: AuthOptions = {
+    debug: true,
     adapter: adapter,
     callbacks: {
       async signIn({ user, account, profile, email, credentials}) {

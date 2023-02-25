@@ -47,7 +47,7 @@ export const admin = {
 export const user = {
     email: process.env.CYPRESS_USER_EMAIL || '',
     name: "Jane User",
-    password: process.env.CYPRESS_USERPASSWORD || '',
+    password: process.env.CYPRESS_USER_PASSWORD || '',
     role: "user"
 }
 

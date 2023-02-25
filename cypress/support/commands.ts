@@ -30,16 +30,47 @@
 //     cy.exec('npx prisma db seed');
 // })
 
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//         seed: Chainable<void>
-//     //   login(email: string, password: string): Chainable<void>
-//     //   drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//     //   dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//     //   visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      login(role: string): Chainable<void>
+    //   drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
+    //   dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
+    //   visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
+    }
+  }
+}
+
+Cypress.Commands.add('login', (role) => {
+    // Get credentials for role
+    const email = Cypress.env(`${role}_email`);
+    const password = Cypress.env(`${role}_password`);
+
+    // Create a new session
+    cy.session(role, () => {
+
+        // Get csrf token
+        cy.request('/api/auth/csrf/credentials').then((response) => {
+            const csrfToken = response.body.csrfToken;
+            console.log(csrfToken);
+
+            // Sign in using credentials
+            cy.request({
+                method: 'POST',
+                url: '/api/auth/callback/credentials',
+                form: true,
+                body: {
+                    csrfToken,
+                    email,
+                    password,
+                    json: true
+                }
+            })
+
+            // Validate that session cookie was set
+            cy.getCookie('next-auth.session-token').should('exist');
+        })
+    })    
+})
 
 export {};

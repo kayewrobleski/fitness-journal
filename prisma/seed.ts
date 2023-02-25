@@ -1,4 +1,11 @@
 import { PrismaClient } from '@prisma/client';
+import { User } from "@prisma/client";
+import { 
+    user as userData, 
+    admin as adminData,
+    exercises as exerciseData 
+} from './seed.data';
+import { hash } from "bcrypt";
 
 const prisma = new PrismaClient();
 

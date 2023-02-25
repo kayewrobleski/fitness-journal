@@ -1,3 +1,5 @@
+import { validateSession } from "@/helpers/validateSession";
+import { UNAUTHORIZED } from "@/lib/errors";
 import prisma from "@/lib/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -56,6 +58,7 @@ export default async function handler (
     res: NextApiResponse
 ) {
     const id = req.query.id as string;
+    const session = await validateSession(req, res);
 
     if (id === undefined) {
         res.status(400);
@@ -85,7 +88,12 @@ export default async function handler (
         const exercise = await prisma.exercise.findUnique({
             where: {id: parseInt(id)}
         });
-        res.status(200).json(exercise);
+
+        if (exercise?.global || exercise?.userEmail == session.user.email) {
+            res.status(200).json(exercise);
+        } {
+            res.status(403).json(UNAUTHORIZED);
+        }
     }
     
 }

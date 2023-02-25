@@ -34,3 +34,6 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# seed data
+/prisma/seed.data.ts 

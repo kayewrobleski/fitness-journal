@@ -1,8 +1,11 @@
+import { UNAUTHORIZED } from "@/lib/errors";
 import prisma from "@/lib/prisma";
+import { User, Session } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { getToken } from "next-auth/jwt";
 import { authOptions } from '../auth/[...nextauth]';
+import { validateSession } from '@/helpers/validateSession';
 
 /**
  * @swagger
@@ -41,28 +44,63 @@ export default async function handler (
 ) {
     // console.log("Req", JSON.stringify(req.headers, null, 2));
 
-    const requestData = await authOptions(req, res);
-    const session = await getServerSession(...requestData);
-    
-    console.log("Session", JSON.stringify(session));
+    // const requestData = await authOptions(req, res);
+    // const session = await getServerSession(...requestData);
+    // let user, isAdmin, email;
 
-    const token = await getToken({req});
-    console.log("JSON Web Token", JSON.stringify(token, null, 2))
+    // console.log("Session", JSON.stringify(session));
+
+    const session = await validateSession(req, res);
+    const isAdmin = session.user.role === 'admin';
+    
+    // if (!isValid) {
+    //     res.status(403).json({ message: UNAUTHORIZED});
+    //     return;
+    // } 
+    
+    // else {
+    //     user = session.user as User;
+    // }
 
     if (req.method === 'POST') {
+
+        // Only admin users can create a global exercise
+        let isGlobal = req.query.global === 'true' ? true : false;
+        if (isGlobal && !isAdmin) {
+            res.status(403).json({ message: UNAUTHORIZED});
+            return;
+        }
+
         const exercise = await prisma.exercise.create({
             data: {
                 name: req.body.name,
-                movementPatternId: req.body.movementPatternId,
                 primaryMuscles: req.body.primaryMuscles,
-                secondaryMuscles: req.body.secondaryMuscles
+                secondaryMuscles: req.body.secondaryMuscles,
+                global: isGlobal,
+                movementPattern: {
+                    connect: {
+                        id: req.body.movementPatternId
+                    }
+                },
+                user: {
+                    connect: {
+                        email: session.user.email || ''
+                    }
+                }
             }  
         })
         res.status(201).json(exercise);
     }
 
     else {
-        const exercises = await prisma.exercise.findMany();
+        const exercises = await prisma.exercise.findMany({
+            where: {
+                OR: [
+                    { userEmail: session.user.email },
+                    { global: true }
+                ]
+            }
+        });
         res.status(200).json(exercises);
     }
 }

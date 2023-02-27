@@ -1,11 +1,7 @@
-import { UNAUTHORIZED } from "@/lib/errors";
+import { FORBIDDEN_ADMIN_ONLY, METHOD_NOT_ALLOWED, UNAUTHORIZED } from "@/helpers/errors";
 import prisma from "@/lib/prisma";
-import { User, Session } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from "next";
-import { getServerSession } from "next-auth";
-import { getToken } from "next-auth/jwt";
-import { authOptions } from '../auth/[...nextauth]';
-import { validateSession } from '@/helpers/validateSession';
+import { validateSessionAndGetUser } from '@/helpers/validateSessionAndGetUser';
 
 /**
  * @swagger
@@ -42,32 +38,16 @@ export default async function handler (
     req: NextApiRequest,
     res: NextApiResponse
 ) {
-    // console.log("Req", JSON.stringify(req.headers, null, 2));
-
-    // const requestData = await authOptions(req, res);
-    // const session = await getServerSession(...requestData);
-    // let user, isAdmin, email;
-
-    // console.log("Session", JSON.stringify(session));
-
-    const session = await validateSession(req, res);
-    const isAdmin = session.user.role === 'admin';
-    
-    // if (!isValid) {
-    //     res.status(403).json({ message: UNAUTHORIZED});
-    //     return;
-    // } 
-    
-    // else {
-    //     user = session.user as User;
-    // }
+    const user = await validateSessionAndGetUser(req, res);
+    if (!user) return;
 
     if (req.method === 'POST') {
 
         // Only admin users can create a global exercise
         let isGlobal = req.query.global === 'true' ? true : false;
+        let isAdmin = user.role === 'admin';
         if (isGlobal && !isAdmin) {
-            res.status(403).json({ message: UNAUTHORIZED});
+            res.status(401).json({ message: FORBIDDEN_ADMIN_ONLY});
             return;
         }
 
@@ -79,28 +59,32 @@ export default async function handler (
                 global: isGlobal,
                 movementPattern: {
                     connect: {
-                        id: req.body.movementPatternId
+                        id: parseInt(req.body.movementPatternId)
                     }
                 },
                 user: {
                     connect: {
-                        email: session.user.email || ''
+                        email: user.email || ''
                     }
                 }
             }  
         })
         res.status(201).json(exercise);
+        return;
     }
 
-    else {
+    if (req.method === 'GET') {
         const exercises = await prisma.exercise.findMany({
             where: {
                 OR: [
-                    { userEmail: session.user.email },
+                    { userEmail: user.email },
                     { global: true }
                 ]
             }
         });
         res.status(200).json(exercises);
+        return;
     }
+
+    res.status(405).json(METHOD_NOT_ALLOWED);
 }

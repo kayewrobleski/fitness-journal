@@ -89,3 +89,194 @@ export const exercises = (admin: User, user: User) => {
         }
     ]
 }
+
+export const plans = (admin: User, user: User) => {
+    return [
+        {
+            id: 1,
+            name: 'Admin plan 1',
+            userEmail: admin.email,
+        },
+        {
+            id: 2,
+            name: 'Admin plan 2',
+            userEmail: admin.email,
+        },
+        {
+            id: 3,
+            name: 'User plan 1',
+            userEmail: user.email,
+        },
+        {
+            id: 4,
+            name: 'User plan 2',
+            userEmail: user.email,
+        }
+    ]
+}
+
+export const planSets = [
+        {
+            id: 1,
+            planId: 1,
+            order: 0
+        },
+        {
+            id: 2,
+            planId: 1,
+            order: 1
+        },
+        {
+            id: 3,
+            planId: 2,
+            order: 0
+        },
+        {
+            id: 4,
+            planId: 2,
+            order: 1
+        },
+        {
+            id: 5,
+            planId: 3,
+            order: 0
+        },
+        {
+            id: 6,
+            planId: 3,
+            order: 1
+        },
+        {
+            id: 7,
+            planId: 4,
+            order: 0
+        },
+        {
+            id: 8,
+            planId: 4,
+            order: 1
+        }
+    ]
+
+export const planExercises = [
+        {
+            id: 1,
+            planSetId: 1,
+            exerciseId: 1,
+            targetVolume: [
+                {
+                    id: 1,
+                    sets: 3,
+                    minReps: 3,
+                    maxReps: 5,
+                    rest: 3 * 60
+                }
+            ],
+            order: 0
+        },
+        {
+            id: 2,
+            planSetId: 2,
+            exerciseId: 2,
+            targetVolume: [
+                {
+                    id: 2,
+                    sets: 3,
+                    minReps: 3,
+                    maxReps: 5,
+                    rest: 3 * 60
+                }
+            ],
+            order: 0 
+        },
+        {
+            id: 3,
+            planSetId: 3,
+            exerciseId: 2,
+            targetVolume: [
+                {
+                    id: 3,
+                    sets: 3,
+                    minReps: 3,
+                    maxReps: 5,
+                    rest: 3 * 60
+                }
+            ],
+            order: 0
+        },
+        {
+            id: 4,
+            planSetId: 4,
+            exerciseId: 3,
+            targetVolume: [
+                {
+                    id: 4,
+                    sets: 3,
+                    minReps: 3,
+                    maxReps: 5,
+                    rest: 3 * 60
+                }
+            ],
+            order: 0
+        },
+        {
+            id: 5,
+            planSetId: 5,
+            exerciseId: 1,
+            targetVolume: [
+                {
+                    id: 5,
+                    sets: 3,
+                    minReps: 3,
+                    maxReps: 5,
+                    rest: 3 * 60
+                }
+            ],
+            order: 0
+        },
+        {
+            id: 6,
+            planSetId: 6,
+            exerciseId: 4,
+            targetVolume: [
+                {
+                    id: 6,
+                    sets: 3,
+                    minReps: 3,
+                    maxReps: 5,
+                    rest: 3 * 60
+                }
+            ],
+            order: 0 
+        },
+        {
+            id: 7,
+            planSetId: 7,
+            exerciseId: 2,
+            targetVolume: [
+                {
+                    id: 7,
+                    sets: 3,
+                    minReps: 3,
+                    maxReps: 5,
+                    rest: 3 * 60
+                }
+            ],
+            order: 0
+        },
+        {
+            id: 8,
+            planSetId: 8,
+            exerciseId: 4,
+            targetVolume: [
+                {
+                    id: 8,
+                    sets: 3,
+                    minReps: 3,
+                    maxReps: 5,
+                    rest: 3 * 60
+                }
+            ],
+            order: 0
+        }
+    ]

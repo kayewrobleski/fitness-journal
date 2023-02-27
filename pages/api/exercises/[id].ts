@@ -1,7 +1,8 @@
-import { validateSession } from "@/helpers/validateSession";
-import { UNAUTHORIZED } from "@/lib/errors";
+import { validateSessionAndGetUser } from "@/helpers/validateSessionAndGetUser";
+import { FORBIDDEN_NO_ACCESS, METHOD_NOT_ALLOWED, NOT_FOUND, UNAUTHORIZED } from "@/helpers/errors";
 import prisma from "@/lib/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
+import { NotFoundError } from "@prisma/client/runtime";
 
 /**
  * @swagger
@@ -58,21 +59,51 @@ export default async function handler (
     res: NextApiResponse
 ) {
     const id = req.query.id as string;
-    const session = await validateSession(req, res);
+    const user = await validateSessionAndGetUser(req, res);
+    if (!user) return;
 
     if (id === undefined) {
         res.status(400);
+        return
     }
 
-    else if (req.method === 'DELETE') {
-        const exercise = await prisma.exercise.delete({
+    let exercise;
+    try {
+        exercise = await prisma.exercise.findUniqueOrThrow({
+            where: {id: parseInt(id)}
+        });
+    }
+    catch (NotFoundError) {
+        res.status(404).json(NOT_FOUND);
+        return;
+    }
+
+    const wasCreatedByUser = exercise.userEmail === user.email;
+    const isGlobal = exercise.global;
+
+    // if (exercise?.userEmail !== user.email) {
+    //     res.status(401).json(FORBIDDEN_NO_ACCESS);
+    //     return;
+    // }
+
+    if (req.method === 'DELETE') {
+        if (!wasCreatedByUser) {
+            res.status(401).json(FORBIDDEN_NO_ACCESS);
+            return;
+        }
+        const deletedExercise = await prisma.exercise.delete({
             where: {id: parseInt(id)},
         })
-        res.status(200).json(exercise);
+        res.status(200).json(deletedExercise);
+        return;
     }
 
-    else if (req.method === 'PUT') {
-        const exercise = await prisma.exercise.update({
+    if (req.method === 'PATCH') {
+        if (!wasCreatedByUser) {
+            res.status(401).json(FORBIDDEN_NO_ACCESS);
+            return;
+        }
+        const updatedExercise = await prisma.exercise.update({
             where: {id: parseInt(id)},
             data: {
                 name: req.body.name,
@@ -81,19 +112,17 @@ export default async function handler (
                 secondaryMuscles: req.body.secondaryMuscles
             }
         })
+        res.status(200).json(updatedExercise);
+        return;
+    }
+
+    if (req.method === 'GET') {
+        if (!wasCreatedByUser && !isGlobal) {
+            res.status(401).json(FORBIDDEN_NO_ACCESS);
+            return;
+        }
         res.status(200).json(exercise);
     }
 
-    else {
-        const exercise = await prisma.exercise.findUnique({
-            where: {id: parseInt(id)}
-        });
-
-        if (exercise?.global || exercise?.userEmail == session.user.email) {
-            res.status(200).json(exercise);
-        } {
-            res.status(403).json(UNAUTHORIZED);
-        }
-    }
-    
+    res.status(405).json(METHOD_NOT_ALLOWED);
 }

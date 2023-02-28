@@ -83,7 +83,6 @@ describe('/api/plans', () => {
                     expect(response.body.userEmail).to.eq(Cypress.env('user_email'));
                 })
             });
-            it.skip('should not allow creating a plan using another user\'s custom exercise');
         })
 
         context('when not authenticated', () => {

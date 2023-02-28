@@ -71,7 +71,7 @@ describe('/api/exercises/[id]', () => {
         })
 
         context('when not authenticated', () => {
-            it('should have response status of Unauthenticated', () => {
+            it('should have response status of Unauthorized', () => {
                 cy.request({
                     url: `/api/exercises/${globalExerciseId}`,
                     failOnStatusCode: false
@@ -145,7 +145,7 @@ describe('/api/exercises/[id]', () => {
         })
 
         context('when not authenticated', () => {
-            it('should have response status of Unauthenticated', () => {
+            it('should have response status of Unauthorized', () => {
                 cy.request({
                     method: 'PATCH',
                     url: `/api/exercises/${globalExerciseId}`,
@@ -214,7 +214,7 @@ describe('/api/exercises/[id]', () => {
         })
 
         context('when not authenticated', () => {
-            it('should have response status of Unauthenticated', () => {
+            it('should have response status of Unauthorized', () => {
                 cy.request({
                     method: 'DELETE',
                     url: `/api/exercises/${globalExerciseId}`,
@@ -242,7 +242,7 @@ describe('/api/exercises/[id]', () => {
             })
         })
         context('when not authenticated', () => {
-            it('should have response status of Unauthenticated', () => {
+            it('should have response status of Unauthorized', () => {
                 cy.request({
                     method: 'POST',
                     url: `/api/exercises/${globalExerciseId}`,

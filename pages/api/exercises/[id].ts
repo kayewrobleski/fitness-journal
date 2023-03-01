@@ -80,12 +80,7 @@ export default async function handler (
 
     const wasCreatedByUser = exercise.userEmail === user.email;
     const isGlobal = exercise.global;
-
-    // if (exercise?.userEmail !== user.email) {
-    //     res.status(401).json(FORBIDDEN_NO_ACCESS);
-    //     return;
-    // }
-
+    
     if (req.method === 'DELETE') {
         if (!wasCreatedByUser) {
             res.status(401).json(FORBIDDEN_NO_ACCESS);

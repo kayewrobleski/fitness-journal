@@ -113,7 +113,7 @@ model Plan {
 
 model PlanSet {
   id                Int                 @id @default(autoincrement())
-  plan              Plan                @relation(fields: [planId], references: [id])
+  plan              Plan                @relation(fields: [planId], references: [id], onDelete: Cascade)
   planId            Int
   order             Int
   planExercises     PlanExercise[]  
@@ -124,7 +124,7 @@ model PlanSet {
 
 model PlanExercise {
   id                Int                 @id @default(autoincrement())
-  planSet           PlanSet             @relation(fields:[planSetId], references: [id])
+  planSet           PlanSet             @relation(fields:[planSetId], references: [id], onDelete: Cascade)
   planSetId         Int
   exercise          Exercise            @relation(fields: [exerciseId], references: [id])
   exerciseId        Int
@@ -137,7 +137,7 @@ model PlanExercise {
 
 model PlanVolume {
   id                Int                 @id @default(autoincrement())
-  planExercise      PlanExercise        @relation(fields: [planExerciseId], references: [id])
+  planExercise      PlanExercise        @relation(fields: [planExerciseId], references: [id], onDelete: Cascade)
   planExerciseId    Int
   sets              Int
   minReps           Int

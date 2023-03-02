@@ -3,6 +3,7 @@ import seed from './prisma/seed.cypress';
 import { exec } from 'child_process';
 
 export default defineConfig({
+  projectId: 'keik7a',
   e2e: {
     baseUrl: process.env.CYPRESS_BASE_URL,
     env: {

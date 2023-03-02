@@ -1,4 +1,4 @@
-describe('/api/plans/[id]', () => {
+describe('/api/plans/[planId]', () => {
 
     const adminPlanIds = [1, 2];
     const userPlanIds = [3, 4];
@@ -206,19 +206,57 @@ describe('/api/plans/[id]', () => {
 
     context('POST', () => {
         context('when authenticated', () => {
-            it.skip('should not allow this method');
+            it('should not allow this method', () => {
+                cy.login('admin');
+                cy.request({
+                    method: 'POST',
+                    url: `/api/plans/${adminPlanIds[0]}`,
+                    failOnStatusCode: false,
+                    body: {}
+                }).should((response) => {
+                    expect(response.status).to.eq(405);
+                });
+            });
         });
         context('when not authenticated', () => {
-            it.skip('should have response status of Unauthorized');
+            it('should have response status of Unauthorized', () => {
+                cy.request({
+                    method: 'POST',
+                    url: `/api/plans/${adminPlanIds[0]}`,
+                    failOnStatusCode: false,
+                    body: {}
+                }).should((response) => {
+                    expect(response.status).to.eq(403);
+                });
+            });
         })
     })
 
     context('PUT', () => {
         context('when authenticated', () => {
-            it.skip('should not allow this method');
+            it('should not allow this method', () => {
+                cy.login('admin');
+                cy.request({
+                    method: 'POST',
+                    url: `/api/plans/${adminPlanIds[0]}`,
+                    failOnStatusCode: false,
+                    body: {}
+                }).should((response) => {
+                    expect(response.status).to.eq(405);
+                });
+            });
         });
         context('when not authenticated', () => {
-            it.skip('should have response status of Unauthorized');
+            it('should have response status of Unauthorized', () => {
+                cy.request({
+                    method: 'POST',
+                    url: `/api/plans/${adminPlanIds[0]}`,
+                    failOnStatusCode: false,
+                    body: {}
+                }).should((response) => {
+                    expect(response.status).to.eq(403);
+                });
+            });
         })
     })
 })

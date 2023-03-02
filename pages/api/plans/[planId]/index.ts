@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/lib/prisma";
 import { validateSessionAndGetUser } from "@/helpers/validateSessionAndGetUser";
-import { FORBIDDEN_NO_ACCESS, NOT_FOUND } from "@/helpers/errors";
+import { FORBIDDEN_NO_ACCESS, METHOD_NOT_ALLOWED, NOT_FOUND } from "@/helpers/errors";
 
 export default async function handler (
     req: NextApiRequest,
@@ -10,7 +10,7 @@ export default async function handler (
     const user = await validateSessionAndGetUser(req, res);
     if (!user) return;
 
-    const id = req.query.id as string;
+    const id = req.query.planId as string;
     let plan;
 
     try {
@@ -57,5 +57,10 @@ export default async function handler (
         res.status(200).json(deletedPlan);
     }
 
-    res.status(200).json(plan);
+    if (req.method === 'GET') {
+        res.status(200).json(plan);
+        return;
+    }
+
+    res.status(405).json(METHOD_NOT_ALLOWED);
 }

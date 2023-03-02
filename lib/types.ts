@@ -1,24 +1,24 @@
-export interface PlanCreateInput {
-    name: string,
-    planSets?: PlanSetCreateInput[]
-}
-export interface PlanSetCreateInput {
+// export interface PlanCreateInput {
+//     name: string,
+//     planSets?: PlanSetCreateInput[]
+// }
+export interface PostPlanSetInput {
     planId?: number,
     order: number,
-    planExercises?: PlanExerciseCreateInput[]
+    planExercises?: PostPlanExerciseInput[]
 }
 
-export interface PlanExerciseCreateInput {
-    planSetId?: number,
-    order: number,
-    exerciseId: number,
-    targetVolume?: PlanVolumeCreateInput[]
+export interface PostPlanExerciseInput {
+    planSetId?: string,
+    order: string,
+    exerciseId: string,
+    targetVolume?: PostPlanVolumeInput[]
 }
 
-export interface PlanVolumeCreateInput {
-    planExerciseId?: number,
-    sets: number,
-    minReps: number, 
-    maxReps: number,
-    rest: number
+export interface PostPlanVolumeInput {
+    planExerciseId?: string,
+    sets: string,
+    minReps: string, 
+    maxReps: string,
+    rest: string
 }

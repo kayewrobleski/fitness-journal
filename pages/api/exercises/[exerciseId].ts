@@ -1,5 +1,5 @@
 import { validateSessionAndGetUser } from "@/helpers/validateSessionAndGetUser";
-import { FORBIDDEN_NO_ACCESS, METHOD_NOT_ALLOWED, NOT_FOUND, UNAUTHORIZED } from "@/helpers/errors";
+import { EXERCISE_IN_USE, FORBIDDEN_NO_ACCESS, METHOD_NOT_ALLOWED, NOT_FOUND, UNAUTHORIZED } from "@/helpers/errors";
 import prisma from "@/lib/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NotFoundError } from "@prisma/client/runtime";
@@ -58,7 +58,7 @@ export default async function handler (
     req: NextApiRequest,
     res: NextApiResponse
 ) {
-    const id = req.query.id as string;
+    const id = req.query.exerciseId as string;
     const user = await validateSessionAndGetUser(req, res);
     if (!user) return;
 
@@ -85,6 +85,13 @@ export default async function handler (
         if (!wasCreatedByUser) {
             res.status(401).json(FORBIDDEN_NO_ACCESS);
             return;
+        }
+        const isUsedInPlan = (await prisma.planExercise.findMany({
+            where: { exerciseId : parseInt(id) }
+        })).length > 0;
+
+        if (isUsedInPlan) {
+            res.status(409).json(EXERCISE_IN_USE);
         }
         const deletedExercise = await prisma.exercise.delete({
             where: {id: parseInt(id)},

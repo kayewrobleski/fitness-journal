@@ -1,4 +1,4 @@
-describe('/api/exercises/[id]', () => {
+describe('/api/exercises/[exerciseId]', () => {
 
     // exercise id for global exercise
     const globalExerciseId = 1;
@@ -159,30 +159,47 @@ describe('/api/exercises/[id]', () => {
     })
 
     context('DELETE', () => {
-
         context('when authenticated', () => {
-            it('should have a repsonse status of OK', () => {
+            let exerciseToDelete;
+            beforeEach(() => {
                 cy.login('admin');
+                // Create dummy exercise
+                cy.request({
+                    method: 'POST',
+                    url: `/api/exercises`,
+                    failOnStatusCode: false,
+                    body: {
+                        name: 'Dummy exercise',
+                        movementPatternId: 1,
+                        primaryMuscles: [],
+                        secondaryMuscles: []
+                    }
+                }).should((response) => {
+                    expect(response.status).to.eq(201);
+                    exerciseToDelete = response.body.id;
+                })
+            })
+            it('should have a repsonse status of OK', () => {
                 cy.request({
                     method: 'DELETE',
-                    url: `/api/exercises/${globalExerciseId}`
+                    url: `/api/exercises/${exerciseToDelete}`
                 }).should((response) => {
                     expect(response.status).to.eq(200);
                 })
             });
 
             it('should delete exercise', () => {
-                cy.login('admin');
                 cy.request({
                     method: 'DELETE',
-                    url: `/api/exercises/${globalExerciseId}`
+                    url: `/api/exercises/${exerciseToDelete}`
                 }).should((response) => {
                     expect(response.body).to.be.a('object');
                 })
 
+                // Check that exercise was deleted
                 cy.request({
                     method: 'GET',
-                    url: `/api/exercises/${globalExerciseId}`,
+                    url: `/api/exercises/${exerciseToDelete}`,
                     failOnStatusCode: false
                 }).should((response) => {
                     expect(response.status).to.eq(404);
@@ -190,10 +207,10 @@ describe('/api/exercises/[id]', () => {
             });
 
             it('should not allow deleting an exercise created by another user', () => {
-                cy.login('admin');
+                cy.login('user');
                 cy.request({
                     method: 'DELETE',
-                    url: `/api/exercises/${userExerciseId}`,
+                    url: `/api/exercises/${exerciseToDelete}`,
                     failOnStatusCode: false
                 }).should((response) => {
                     expect(response.status).to.eq(401);
@@ -201,7 +218,6 @@ describe('/api/exercises/[id]', () => {
             });
 
             it('if exercise id does not exist, should have response status of Not Found', () => {
-                cy.login('admin');
                 cy.request({
                     method: 'DELETE',
                     url: `/api/exercises/100`,
@@ -211,6 +227,15 @@ describe('/api/exercises/[id]', () => {
                 })
             });
 
+            it('if exercise is used in a plan, should have response status of Conflict', () => {
+                cy.request({
+                    method: 'DELETE',
+                    url: `/api/exercises/${globalExerciseId}`,
+                    failOnStatusCode: false
+                }).should((response) => {
+                    expect(response.status).to.eq(409);
+                })
+            });
         })
 
         context('when not authenticated', () => {

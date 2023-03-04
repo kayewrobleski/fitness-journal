@@ -71,7 +71,7 @@ describe('/api/plans/[planId]/sets', () => {
                     url: `api/plans/${adminPlanIds[0]}/sets`,
                     failOnStatusCode: false
                 }).should((response) => {
-                    expect(response.status).to.eq(403);
+                    expect(response.status).to.eq(401);
                 })
 
                 cy.login('admin');
@@ -79,7 +79,7 @@ describe('/api/plans/[planId]/sets', () => {
                     url: `api/plans/${userPlanIds[0]}/sets`,
                     failOnStatusCode: false
                 }).should((response) => {
-                    expect(response.status).to.eq(403);
+                    expect(response.status).to.eq(401);
                 })
             });
             it('when plan id does not exist, should have status of 404', () => {
@@ -149,38 +149,179 @@ describe('/api/plans/[planId]/sets', () => {
                     expect(sortedResponseExercises[2].targetVolume.length).to.eq(sortedRequestExercises[2].targetVolume?.length || 0)
                 });
             });
-            it.skip('should not allow creating a set for another user\'s plan');
-            it.skip('should not allow creating a set with another user\'s exercise');
+            it('should not allow creating a set for another user\'s plan', () => {
+                cy.login('admin');
+                cy.request( {
+                    method: 'POST',
+                    url: `/api/plans/${userPlanIds[0]}/sets`,
+                    body: {
+                        order: 0,
+                        planExercises: []
+                    },
+                    failOnStatusCode: false
+                }).should((response) => {
+                    expect(response.status).to.eq(401);
+                })
+
+                cy.login('user');
+                cy.request( {
+                    method: 'POST',
+                    url: `/api/plans/${adminPlanIds[0]}/sets`,
+                    body: {
+                        order: 0,
+                        planExercises: []
+                    },
+                    failOnStatusCode: false
+                }).should((response) => {
+                    expect(response.status).to.eq(401);
+                })
+            });
+            it('should not allow creating a set with another user\'s exercise', () => {
+                cy.login('admin');
+                cy.request( {
+                    method: 'POST',
+                    url: `/api/plans/${adminPlanIds[0]}/sets`,
+                    body: {
+                        order: 0,
+                        planExercises: [
+                            {
+                                exerciseId: userExercises[0],
+                                order: 0
+                            }
+                        ]
+                    },
+                    failOnStatusCode: false
+                }).should((response) => {
+                    expect(response.status).to.eq(401);
+                })
+
+                cy.login('user');
+                cy.request( {
+                    method: 'POST',
+                    url: `/api/plans/${adminPlanIds[0]}/sets`,
+                    body: {
+                        order: 0,
+                        planExercises: [
+                            {
+                                exerciseId: adminExercises[0],
+                                order: 0
+                            }
+                        ]
+                    },
+                    failOnStatusCode: false
+                }).should((response) => {
+                    expect(response.status).to.eq(401);
+                })
+            });
         })
         context('when not authenticated', () => {
-            it.skip('should have response status of Unauthorized');
+            it('should have response status of Unauthorized', () => {
+                cy.request( {
+                    method: 'POST',
+                    url: `/api/plans/${adminPlanIds[0]}/sets`,
+                    body: {
+                        order: 0,
+                        planExercises: []
+                    },
+                    failOnStatusCode: false
+                }).should((response) => {
+                    expect(response.status).to.eq(403);
+                })
+            });
         })
     })
 
     context('PATCH', () => {
         context('when authenticated', () => {
-            it.skip('should not allow this method');
+            it('should not allow this method', () => {
+                cy.login('admin')
+                cy.request( {
+                    method: 'PATCH',
+                    url: `/api/plans/${adminPlanIds[0]}/sets`,
+                    body: {
+                        order: 0,
+                        planExercises: []
+                    },
+                    failOnStatusCode: false
+                }).should((response) => {
+                    expect(response.status).to.eq(405);
+                })
+            });
         })
         context('when not authenticated', () => {
-            it.skip('should have response status of Unauthorized');
+            it('should have response status of Unauthorized', () => {
+                cy.request( {
+                    method: 'PATCH',
+                    url: `/api/plans/${adminPlanIds[0]}/sets`,
+                    body: {
+                        order: 0,
+                        planExercises: []
+                    },
+                    failOnStatusCode: false
+                }).should((response) => {
+                    expect(response.status).to.eq(403);
+                })
+            });
         })
     })
 
     context('PUT', () => {
         context('when authenticated', () => {
-            it.skip('should not allow this method');
+            it('should not allow this method', () => {
+                cy.login('admin')
+                cy.request( {
+                    method: 'PUT',
+                    url: `/api/plans/${adminPlanIds[0]}/sets`,
+                    body: {
+                        order: 0,
+                        planExercises: []
+                    },
+                    failOnStatusCode: false
+                }).should((response) => {
+                    expect(response.status).to.eq(405);
+                })
+            });
         })
         context('when not authenticated', () => {
-            it.skip('should have response status of Unauthorized');
+            it('should have response status of Unauthorized', () => {
+                cy.request( {
+                    method: 'PUT',
+                    url: `/api/plans/${adminPlanIds[0]}/sets`,
+                    body: {
+                        order: 0,
+                        planExercises: []
+                    },
+                    failOnStatusCode: false
+                }).should((response) => {
+                    expect(response.status).to.eq(403);
+                })
+            });
         })
     })
 
     context('DELETE', () => {
         context('when authenticated', () => {
-            it.skip('should not allow this method');
+            it('should not allow this method', () => {
+                cy.login('admin')
+                cy.request( {
+                    method: 'DELETE',
+                    url: `/api/plans/${adminPlanIds[0]}/sets`,
+                    failOnStatusCode: false
+                }).should((response) => {
+                    expect(response.status).to.eq(405);
+                })
+            });
         })
         context('when not authenticated', () => {
-            it.skip('should have response status of Unauthorized');
+            it('should have response status of Unauthorized', () => {
+                cy.request( {
+                    method: 'DELETE',
+                    url: `/api/plans/${adminPlanIds[0]}/sets`,
+                    failOnStatusCode: false
+                }).should((response) => {
+                    expect(response.status).to.eq(403);
+                })
+            });
         })
     })
 })

@@ -1,7 +1,7 @@
-// export interface PlanCreateInput {
-//     name: string,
-//     planSets?: PlanSetCreateInput[]
-// }
+export interface PostPlanInput {
+    name: string,
+    planSets?: PostPlanSetInput[]
+}
 export interface PostPlanSetInput {
     planId?: number,
     order: number,

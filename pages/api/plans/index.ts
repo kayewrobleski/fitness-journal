@@ -2,13 +2,6 @@ import { METHOD_NOT_ALLOWED } from "@/helpers/errors";
 import { validateSessionAndGetUser } from "@/helpers/validateSessionAndGetUser";
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/lib/prisma";
-import { 
-    PlanCreateInput,
-    PlanSetCreateInput, 
-    PlanExerciseCreateInput,
-    PlanVolumeCreateInput
-} from "@/lib/types";
-import { Prisma, PlanExercise, PlanSet, PlanVolume, User } from "@prisma/client";
 
 export default async function handler (
     req: NextApiRequest,

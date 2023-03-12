@@ -40,7 +40,7 @@ model Session {
 model User {
   id                String              @id @default(cuid())
   name              String?
-  email             String?             @unique
+  email             String              @unique
   password          String?
   emailVerified     DateTime?
   image             String?
@@ -83,7 +83,7 @@ model MovementPattern {
 
 model Exercise {
   id                Int               @id @default(autoincrement())
-  name              String            @unique
+  name              String            
   movementPattern   MovementPattern   @relation(fields: [movementPatternId], references: [id])
   movementPatternId Int
   primaryMuscles    String[]
@@ -91,29 +91,31 @@ model Exercise {
   planExercises     PlanExercise[]
   global            Boolean           @default(false)
   deprecated        Boolean           @default(false)
-  user              User?             @relation(fields: [userId], references: [id])
-  userId            String?
+  user              User?             @relation(fields: [userEmail], references: [email])
+  userEmail         String?
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
-  @@unique([name, global, userId])
+  @@unique([name, userEmail])
 
 }
 
 model Plan {
   id                Int                 @id @default(autoincrement())
-  name              String              @unique
+  name              String              
   planSets          PlanSet[]  
   workouts          Workout[]
-  user              User                @relation(fields: [userId], references: [id])
-  userId            String
+  user              User                @relation(fields: [userEmail], references: [email])
+  userEmail         String
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
+  @@unique([name, userEmail])
 }
 
 model PlanSet {
   id                Int                 @id @default(autoincrement())
-  plan              Plan                @relation(fields: [planId], references: [id])
+  plan              Plan                @relation(fields: [planId], references: [id], onDelete: Cascade)
   planId            Int
+  order             Int
   planExercises     PlanExercise[]  
   workoutSets       WorkoutSet[]
   createdAt         DateTime          @default(now())
@@ -122,8 +124,7 @@ model PlanSet {
 
 model PlanExercise {
   id                Int                 @id @default(autoincrement())
-  name              String              @unique
-  planSet           PlanSet             @relation(fields:[planSetId], references: [id])
+  planSet           PlanSet             @relation(fields:[planSetId], references: [id], onDelete: Cascade)
   planSetId         Int
   exercise          Exercise            @relation(fields: [exerciseId], references: [id])
   exerciseId        Int
@@ -136,7 +137,7 @@ model PlanExercise {
 
 model PlanVolume {
   id                Int                 @id @default(autoincrement())
-  planExercise      PlanExercise        @relation(fields: [planExerciseId], references: [id])
+  planExercise      PlanExercise        @relation(fields: [planExerciseId], references: [id], onDelete: Cascade)
   planExerciseId    Int
   sets              Int
   minReps           Int

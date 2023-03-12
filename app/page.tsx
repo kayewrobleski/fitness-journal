@@ -18,8 +18,14 @@ export default function Home() {
         />
         <div className="text-center max-w-screen-sm mb-10">
           <h1 className="text-stone-200 font-bold text-2xl">
-            Next.js Prisma MySQL Auth Starter
+            ⚠️ Under Construction ⚠️
           </h1>
+          <div className="m-1">
+            <h3 className="text-stone-200 font-bold text-xl">
+              Fitness Journal App
+            </h3>
+          </div>
+          
           {session.status === "unauthenticated" && 
             <button className="text-stone-400" onClick={() => signIn()}>Sign in</button>
           }
@@ -38,30 +44,12 @@ export default function Home() {
             >
               Next.js
             </a>{" "}
-            starter kit that uses{" "}
-            <a
-              href="https://next-auth.js.org/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-stone-400 underline hover:text-stone-200 transition-all"
-            >
-              Next-Auth
-            </a>{" "}
-            for simple email + password login and a MySQL database to persist
-            the data.
+            web application used for creating workout plans and tracking strength progress
           </p>
         </div>
         <div className="flex space-x-3">
-          <Link
-            href="/protected"
-            prefetch={false} // workaround until https://github.com/vercel/vercel/pull/8978 is deployed
-            className="text-stone-400 underline hover:text-stone-200 transition-all"
-          >
-            Protected Page
-          </Link>
-          <p className="text-white">·</p>
           <a
-            href="https://github.com/steven-tey/nextjs-typescript-starter"
+            href="https://github.com/kayewrobleski/fitness-journal"
             target="_blank"
             rel="noopener noreferrer"
             className="text-stone-400 underline hover:text-stone-200 transition-all"
